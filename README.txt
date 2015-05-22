@@ -5,6 +5,8 @@ Released under GPL: license.txt
 
 === Compiling (a necessary step) ===
 
+First, you need Qt 4.8 or higher (Should work with Qt5 but there may be a few minor issues)
+
 To compile on Linux
 > qmake
 > make
