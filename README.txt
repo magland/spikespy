@@ -10,6 +10,7 @@ See release-notes.txt for info on recent changes
 First, you need Qt 4.8 or higher (Should work with Qt5 but there may be a few minor issues)
 
 To compile on Linux
+> cd spikespy
 > qmake
 > make
 
