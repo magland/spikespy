@@ -39,7 +39,7 @@ for ff=1:length(datafields)
 			writemda(X,[tmppath,'.tmp']);
 			movefile([tmppath,'.tmp'],tmppath); %do this so we don't run the risk of writing a partial file and then regretting that later
 			elapsed=toc;
-			if (toc>0.1) fprintf('Time for writing file: %.2f seconds\n',elapsed); end;
+			if (toc>0.5) fprintf('Time for writing file: %.2f seconds\n',elapsed); end;
 		else
 			if (length(X(:))>1e6)
 				if (verbose) disp('File already exists - that saves some time!'); end;
@@ -49,7 +49,7 @@ for ff=1:length(datafields)
 	end;
 end;
 
-js_path=[get_temp_path,'_run_java_script.js'];
+js_path=[get_temp_path,'/',efficient_hash(js_code),'_run_java_script.js'];
 write_text_file(js_code,js_path);
 
 
@@ -66,8 +66,6 @@ end;
 system(sprintf('%s %s %s &',exec_string,js_path,other_params));
 
 pause(0.3); %give it some time to open so windows (almost) always open in right order
-
-
 
 end
 

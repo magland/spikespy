@@ -1,14 +1,14 @@
-#ifndef SSVIEWCONTROLLER_H
-#define SSVIEWCONTROLLER_H
+#ifndef SSCONTROLLER_H
+#define SSCONTROLLER_H
 
 #include <QObject>
 
-class SSViewController : public QObject
+class SSController : public QObject
 {
 	Q_OBJECT
 public:
-	SSViewController();
-	~SSViewController();
+	SSController();
+	~SSController();
 	Q_INVOKABLE QWidget *createTimeSeriesWidget();
 	Q_INVOKABLE QWidget *createTimeSeriesView();
 	Q_INVOKABLE QWidget *createLabelView();
@@ -17,4 +17,4 @@ public:
 };
 
 
-#endif // SSVIEWCONTROLLER_H
+#endif // SSCONTROLLER_H

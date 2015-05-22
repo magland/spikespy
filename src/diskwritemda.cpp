@@ -3,6 +3,7 @@
 #include <QDebug>
 #include "usagetracking.h"
 #include "cvcommon.h"
+#include "sscommon.h"
 
 class DiskWriteMdaPrivate {
 public:
@@ -49,7 +50,7 @@ void DiskWriteMda::setPath(const QString &path)
 
 void DiskWriteMda::useTemporaryFile()
 {
-	QString path=QString(QDir::temp().path()+"/ssviewqt.diskwritemda.tmp.%1").arg(qAbs(qrand()));
+	QString path=QString(ssTempPath()+"/spikespy.diskwritemda.tmp.%1").arg(qAbs(qrand()));
 	removeOnClose(path);
 	setPath(path);
 }

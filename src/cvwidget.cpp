@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include "cvcommon.h"
+#include "sscommon.h"
 #include <QApplication>
 
 class CVWidgetPrivate {
@@ -168,8 +169,8 @@ void CVWidgetPrivate::generate_features_from_clips()
 	dlg.show();
 	qApp->processEvents();
 
-	QString inpath=QDir::tempPath()+"/ssviewqt_"+make_random_id(10)+".mda";
-	QString outpath=QDir::tempPath()+"/ssviewqt_"+make_random_id(10)+".mda";
+	QString inpath=ssTempPath()+"/spikespy_"+make_random_id(10)+".mda";
+	QString outpath=ssTempPath()+"/spikespy_"+make_random_id(10)+".mda";
 	removeOnClose(inpath);
 	removeOnClose(outpath);
 

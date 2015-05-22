@@ -3,7 +3,7 @@
 #include "extractclipsdialog.h"
 #include "ssabstractview.h"
 #include "sstimeseriesview.h"
-#include "ssviewcontroller.h"
+#include "sscontroller.h"
 #include <QSplitter>
 #include <QDebug>
 #include <QVBoxLayout>
@@ -277,10 +277,10 @@ void SSTimeSeriesWidget::slot_extract_clips()
 	SSLabelsModel *TL=VV->getLabels();
 	MemoryMda TL0;
 	if (TL) TL0=TL->getTimepointsLabels(0,TL->getMaxTimepoint());
-	QString TL_path=QDir::tempPath()+"/ssviewqt-tmp-extract-clips-TL.mda";
+	QString TL_path=ssTempPath()+"/spikespy-tmp-extract-clips-TL.mda";
 	removeOnClose(TL_path);
 	TL0.write(TL_path.toLatin1().data());
-	QString out_path=QString(QDir::tempPath()+"/ssviewqt-tmp-extract-clips-out-%1.mda").arg(qAbs(qrand()));
+	QString out_path=QString(ssTempPath()+"/spikespy-tmp-extract-clips-out-%1.mda").arg(qAbs(qrand()));
 	removeOnClose(out_path);
 	QString out_path_TM=QFileInfo(out_path).path()+"/"+QFileInfo(out_path).completeBaseName()+".TM.mda";
 	removeOnClose(out_path_TM);
@@ -301,7 +301,7 @@ void SSTimeSeriesWidget::slot_extract_clips()
 
 	if (save_to_path.isEmpty()) {
 		DiskReadMda out_TM(out_path_TM);
-		SSViewController CC;
+		SSController CC;
 		SSTimeSeriesWidget *WWW=(SSTimeSeriesWidget *)CC.createTimeSeriesWidget();
 		SSTimeSeriesView *VVV=(SSTimeSeriesView *)CC.createTimeSeriesView();
 		VVV->setData((DiskArrayModel *)CC.loadArray(out_path),true);
@@ -397,9 +397,9 @@ void SSTimeSeriesWidget::slot_extract_comparison_clips()
 		return;
 	}
 	MemoryMda TL1_0=TL1->getTimepointsLabels(0,TL1->getMaxTimepoint());
-	QString TL1_path=QDir::tempPath()+"/ssviewqt-tmp-extract-clips-TL1.mda";
+	QString TL1_path=ssTempPath()+"/spikespy-tmp-extract-clips-TL1.mda";
 	TL1_0.write(TL1_path.toLatin1().data());
-	QString out_path1=QString(QDir::tempPath()+"/ssviewqt-tmp-extract-clips-out1-%1.mda").arg(qAbs(qrand()));
+	QString out_path1=QString(ssTempPath()+"/spikespy-tmp-extract-clips-out1-%1.mda").arg(qAbs(qrand()));
 	removeOnClose(out_path1);
 
 	SSTimeSeriesView *VV2=(SSTimeSeriesView *)V2;
@@ -411,10 +411,10 @@ void SSTimeSeriesWidget::slot_extract_comparison_clips()
 		return;
 	}
 	MemoryMda TL2_0=TL2->getTimepointsLabels(0,TL2->getMaxTimepoint());
-	QString TL2_path=QDir::tempPath()+"/ssviewqt-tmp-extract-clips-TL2.mda";
+	QString TL2_path=ssTempPath()+"/spikespy-tmp-extract-clips-TL2.mda";
 	removeOnClose(TL2_path);
 	TL2_0.write(TL2_path.toLatin1().data());
-	QString out_path2=QString(QDir::tempPath()+"/ssviewqt-tmp-extract-clips-out2-%1.mda").arg(qAbs(qrand()));
+	QString out_path2=QString(ssTempPath()+"/spikespy-tmp-extract-clips-out2-%1.mda").arg(qAbs(qrand()));
 
 	QString out_path_TM=QFileInfo(out_path1).path()+"/"+QFileInfo(out_path1).completeBaseName()+".TM.mda";
 
@@ -431,7 +431,7 @@ void SSTimeSeriesWidget::slot_extract_comparison_clips()
 
 	if (save_to_path.isEmpty()) {
 		DiskReadMda out_TM(out_path_TM);
-		SSViewController CC;
+		SSController CC;
 		SSTimeSeriesWidget *WWW=(SSTimeSeriesWidget *)CC.createTimeSeriesWidget();
 
 		SSTimeSeriesView *VVV1=(SSTimeSeriesView *)CC.createTimeSeriesView();

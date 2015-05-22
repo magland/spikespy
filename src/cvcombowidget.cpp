@@ -89,7 +89,7 @@ void CVComboWidget::slot_update_selected_clips()
 	int N1=d->m_clips.N1();
 	int N2=d->m_clips.N2();
 
-	QString path=QString(QDir::tempPath()+"/ssviewqt-tmp-cvcombowidget-%1.mda").arg(qAbs(qrand()));;
+	QString path=QString(ssTempPath()+"/spikespy-tmp-cvcombowidget-%1.mda").arg(qAbs(qrand()));;
 	removeOnClose(path);
 
 	DiskWriteMda X(path);

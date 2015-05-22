@@ -65,7 +65,7 @@ void CleanupObject::closing()
 
 		QDateTime time=QFileInfo(path).lastModified();
 		QString timestamp=time.toString("yyyy-mm-dd-hh-mm-ss");
-		QString tmp=QFileInfo(path).path()+"/ssviewqt."+QFileInfo(path).completeBaseName()+"."+timestamp;
+		QString tmp=QFileInfo(path).path()+"/spikespy."+QFileInfo(path).completeBaseName()+"."+timestamp;
 		if (QDir(tmp).exists()) {
 			qDebug()  << "Removing directory: " << tmp;
 			QStringList list=QDir(tmp).entryList(QStringList("*.mda"),QDir::Files|QDir::NoDotAndDotDot);

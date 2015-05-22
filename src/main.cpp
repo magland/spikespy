@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QScriptEngine>
 #include <QDebug>
-#include "ssviewcontroller.h"
+#include "sscontroller.h"
 #include <QStringList>
 #include "textfile.h"
 #include "usagetracking.h"
@@ -45,10 +45,10 @@ int main(int argc, char *argv[]) {
 
 	//qScriptRegisterMetaType(engine, myObjectToScriptValue, myObjectFromScriptValue);
 
-	SSViewController SSVIEW;
-	QScriptValue SSVIEW_value = engine->newQObject(&SSVIEW);
-	   //QScriptValue SSVIEW_value = engine->newQObject(new QObject());
-	engine->globalObject().setProperty("SSVIEW", SSVIEW_value);
+	SSController SPIKESPY;
+	QScriptValue SPIKESPY_value = engine->newQObject(&SPIKESPY);
+	   //QScriptValue SPIKESPY_value = engine->newQObject(new QObject());
+	engine->globalObject().setProperty("SPIKESPY", SPIKESPY_value);
 
 	QString script;
 	if (!script_path.isEmpty()) {
@@ -63,10 +63,10 @@ int main(int argc, char *argv[]) {
 			//mda_path="/tmp/1b781243ab416c14595f20d260a8c35a_run_java_script_variable_X.mda";
 		}
 		script="";
-		script+="var W=SSVIEW.createTimeSeriesWidget();\n\n";
+		script+="var W=SPIKESPY.createTimeSeriesWidget();\n\n";
 		for (int i=0; i<mda_paths.count(); i++) {
-			script+=QString("var V%1=SSVIEW.createTimeSeriesView();\n").arg(i);
-			script+=QString("var X%1=SSVIEW.loadArray('%2');\n").arg(i).arg(mda_paths[i]);
+			script+=QString("var V%1=SPIKESPY.createTimeSeriesView();\n").arg(i);
+			script+=QString("var X%1=SPIKESPY.loadArray('%2');\n").arg(i).arg(mda_paths[i]);
 			script+=QString("V%1.setData(X%1,true);\n").arg(i);
 			if (!connect_zeros) {
 				script+=QString("V%1.setConnectZeros(false);\n").arg(i);
@@ -75,9 +75,9 @@ int main(int argc, char *argv[]) {
 			script+=QString("W.addView(V%1);\n").arg(i);
 
 			if (i<TL_paths.count()) {
-				script+=QString("var TL%1=SSVIEW.readArray('%2');\n").arg(i).arg(TL_paths[i]);
+				script+=QString("var TL%1=SPIKESPY.readArray('%2');\n").arg(i).arg(TL_paths[i]);
 				script+=QString("V%1.setLabels(TL%1,true); V%1.initialize();\n").arg(i);
-				//script+=QString("var L%1=SSVIEW.createLabelView();\n").arg(i);
+				//script+=QString("var L%1=SPIKESPY.createLabelView();\n").arg(i);
 				//script+=QString("L%1.setLabels(TL%1,true);\n").arg(i);
 				//script+=QString("W.addView(L%1);\n").arg(i);
 			}

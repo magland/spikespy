@@ -228,7 +228,7 @@ void DiskReadMdaPrivate::load_header()
 		return;
 	}
 
-	if (m_path.contains("/ssviewqt-server?")) {
+	if (m_path.contains("/spikespy-server?")) {
 
 	}
 

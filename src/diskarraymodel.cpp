@@ -591,7 +591,7 @@ QString DiskArrayModelPrivate::get_multiscale_file_name(int scale) {
 	QString str=QString(".%1").arg(scale);
 	QDateTime time=QFileInfo(m_path).lastModified();
 	QString timestamp=time.toString("yyyy-mm-dd-hh-mm-ss");
-	QString subdir="ssviewqt."+QFileInfo(m_path).baseName()+"."+timestamp+"/";
+	QString subdir="spikespy."+QFileInfo(m_path).baseName()+"."+timestamp+"/";
 	if (scale==1) {
 		str="";
 		subdir="";

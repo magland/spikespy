@@ -2,9 +2,7 @@
 #include <QStringList>
 #include <math.h>
 #include <QDebug>
-//extern "C" {
-#include "../../../jfm/ssviewqt/source/ssviewqt/mdaio.h"
-//}
+#include "mdaio.h"
 #include "array2d.h"
 #include "pcasolver.h"
 

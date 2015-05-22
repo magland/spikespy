@@ -1,4 +1,4 @@
-#include "ssviewcontroller.h"
+#include "sscontroller.h"
 #include "sstimeserieswidget.h"
 #include "sscommon.h"
 #include "diskarraymodel.h"
@@ -7,17 +7,17 @@
 #include "sslabelview.h"
 #include "mdaobject.h"
 
-SSViewController::SSViewController()
+SSController::SSController()
 {
 
 }
 
-SSViewController::~SSViewController()
+SSController::~SSController()
 {
 
 }
 
-QWidget *SSViewController::createTimeSeriesWidget() {
+QWidget *SSController::createTimeSeriesWidget() {
 	SSTimeSeriesWidget *W=new SSTimeSeriesWidget();
 	W->setAttribute(Qt::WA_DeleteOnClose);
 	W->showNormal();
@@ -26,25 +26,25 @@ QWidget *SSViewController::createTimeSeriesWidget() {
 	return W;
 }
 
-QWidget *SSViewController::createTimeSeriesView() {
+QWidget *SSController::createTimeSeriesView() {
 	SSTimeSeriesView *V=new SSTimeSeriesView();
 	return V;
 }
 
-QWidget *SSViewController::createLabelView()
+QWidget *SSController::createLabelView()
 {
 	SSLabelView *V=new SSLabelView();
 	return V;
 }
 
-QObject *SSViewController::loadArray(QString path) {
+QObject *SSController::loadArray(QString path) {
 	SSARRAY *X=new SSARRAY();
 	X->setPath(path.toLatin1().data());
 
 	return X;
 }
 
-QObject *SSViewController::readArray(QString path)
+QObject *SSController::readArray(QString path)
 {
 	DiskReadMda *ret=new DiskReadMda;
 	ret->setPath(path);
