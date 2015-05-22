@@ -109,6 +109,10 @@ end
 
 function ret=get_temp_path
 
-ret=sprintf('%s/../tmp',fileparts(mfilename('fullpath')));
+%ret=sprintf('%s/../tmp',fileparts(mfilename('fullpath')));
+ret=sprintf('%s/spikespy',tempdir);
+if (~exist(ret,'dir'))
+	mkdir(tempdir,'spikespy');
+end;
 
 end

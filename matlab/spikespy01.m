@@ -13,14 +13,29 @@ for j=1:length(varargin)
 		script{end+1}=sprintf('var X=SPIKESPY.loadArray($%s$);',Xvar);
 		script{end+1}='V.setData(X);';
 		script{end+1}='W.addView(V);';	
+	elseif (iscell(arg))&&(length(arg)==1)
+		Xvar=sprintf('X%d',j); data.(Xvar)=arg{1};
+		script{end+1}='var V=SPIKESPY.createTimeSeriesView();';
+		script{end+1}=sprintf('var X=SPIKESPY.loadArray($%s$);',Xvar);
+		script{end+1}='V.setData(X);';
+		script{end+1}='W.addView(V);';	
 	elseif (iscell(arg))&&(length(arg)==2)
-		TLvar=sprintf('T%d',j); data.(TLvar)=[arg{1};arg{2}];
-		%Lvar=sprintf('L%d',j); data.(Lvar)=arg{2};
-		script{end+1}='var V=SPIKESPY.createLabelView();';
-		script{end+1}=sprintf('var TL=SPIKESPY.readArray($%s$);',TLvar);
-		%script{end+1}=sprintf('var L=SPIKESPY.readArray($%s$);',Lvar);
-		script{end+1}='V.setLabels(TL);';
-		script{end+1}='W.addView(V);';
+		if (isstr(arg{2}))
+			Xvar=sprintf('X%d',j); data.(Xvar)=arg{1};
+			script{end+1}='var V=SPIKESPY.createTimeSeriesView();';
+			script{end+1}=sprintf('var X=SPIKESPY.loadArray($%s$);',Xvar);
+			script{end+1}='V.setData(X);';
+			script{end+1}='W.addView(V);';	
+			script{end+1}=sprintf('V.setTitle(''%s'');',arg{2});
+		else
+			TLvar=sprintf('T%d',j); data.(TLvar)=[arg{1};arg{2}];
+			%Lvar=sprintf('L%d',j); data.(Lvar)=arg{2};
+			script{end+1}='var V=SPIKESPY.createLabelView();';
+			script{end+1}=sprintf('var TL=SPIKESPY.readArray($%s$);',TLvar);
+			%script{end+1}=sprintf('var L=SPIKESPY.readArray($%s$);',Lvar);
+			script{end+1}='V.setLabels(TL);';
+			script{end+1}='W.addView(V);';
+		end;
 	elseif (iscell(arg))&&(length(arg)>=3)
 		Xvar=sprintf('X%d',j); data.(Xvar)=arg{1};
 		TLvar=sprintf('T%d',j); data.(TLvar)=[arg{2};arg{3}];
