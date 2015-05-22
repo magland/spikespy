@@ -1,6 +1,6 @@
 5/22/2015
 
-Available on github: https://github.com/magland/spikespy.git
+git clone https://github.com/magland/spikespy.git
 New name: ssviewqt -> spikespy
 Completely self-contained project
 README.txt is all you should need for compiling/using
