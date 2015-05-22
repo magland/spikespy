@@ -1,2 +1,2 @@
 TEMPLATE=subdirs
-SUBDIRS=ssfeatures
+SUBDIRS=ssfeatures extractclips extractclips2

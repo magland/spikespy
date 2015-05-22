@@ -176,7 +176,7 @@ void CVWidgetPrivate::generate_features_from_clips()
 
 	m_clips.write(inpath);
 
-	QString exe=qApp->applicationDirPath()+"/../../../../../processing/bin/ssfeatures";
+	QString exe=qApp->applicationDirPath()+"/ssfeatures";
 	QStringList args; args << inpath << outpath << "--method=pca" << "--nfeatures=3";
 	int ret=QProcess::execute(exe,args);
 
