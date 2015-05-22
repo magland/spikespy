@@ -1,6 +1,9 @@
-SPIKESPY
+== SPIKESPY ==
 
-== Compiling (a necessary step) ==
+Copyright (C) 2015 Jeremy Magland and Alex Barnett, Simons Center for Data Analysis (SCDA)
+Released under GPL: license.txt
+
+=== Compiling (a necessary step) ===
 
 To compile on Linux
 > qmake
@@ -9,7 +12,7 @@ To compile on Linux
 To compile on other platforms
 > Try yourself or ask Jeremy/Alex
 
-== Using from MATLAB ==
+=== Using from MATLAB ===
 
 > cd spikespy/matlab
 > spikespy_simple_test
