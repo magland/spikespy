@@ -3,6 +3,8 @@
 Copyright (C) 2015 Jeremy Magland and Alex Barnett, Simons Center for Data Analysis (SCDA)
 Released under GPL: license.txt
 
+See release-notes.txt for info on recent changes
+
 === Compiling (a necessary step) ===
 
 First, you need Qt 4.8 or higher (Should work with Qt5 but there may be a few minor issues)
