@@ -1,0 +1,2 @@
+# spikespy
+Spike sorting visualization
