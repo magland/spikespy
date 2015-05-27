@@ -1,6 +1,6 @@
 #include "expfilter.h"
 #include <math.h>
-#include "../../../jfm/ssviewqt/source/ssviewqt/mdaio.h"
+#include "mdaio.h"
 
 int expfilter(FILE *infile,FILE *outfile,int lowpass,float tau) {
 	long i,j,i1;
