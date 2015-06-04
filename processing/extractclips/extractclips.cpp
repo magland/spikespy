@@ -11,7 +11,17 @@ int extractclips(FILE *infile,FILE *infile_TL,FILE *outfile,FILE *outfile_TL,FIL
 	int clipsize=params["clipsize"].toInt();
 	bool fixed_clipsize=params.contains("fixed-clipsize");
 	if (fixed_clipsize) printf("Using fixed clip size.\n");
-	QStringList labels_str=params["labels"].toStringList();
+	QStringList labels_str;
+
+	bool combine_with_or=false;
+	if (params["labels"].toString().contains("|")) {
+			combine_with_or=true;
+			labels_str=params["labels"].toString().split("|");
+	}
+	else {
+		labels_str=params["labels"].toString().split(",");
+	}
+
 	QList<int> labels;
 	bool all_labels=false;
 	for (int ii=0; ii<labels_str.count(); ii++) {
@@ -26,6 +36,8 @@ int extractclips(FILE *infile,FILE *infile_TL,FILE *outfile,FILE *outfile_TL,FIL
 		}
 	}
 	int label1=labels.value(0);
+
+	if (combine_with_or) all_labels=true;
 
 	QMap<int,int> target_label_counts;
 	for (int jj=0; jj<labels.count(); jj++) {
@@ -52,7 +64,14 @@ int extractclips(FILE *infile,FILE *infile_TL,FILE *outfile,FILE *outfile_TL,FIL
 		int l0=buffer_TL[i*2+1];
 		if (!time_labels.contains(l0)) time_labels[l0]=QSet<int>();
 		time_labels[l0].insert(t0);
-		if (all_labels) all_event_times.insert(t0);
+		if (all_labels) {
+			if (!combine_with_or) {
+				all_event_times.insert(t0);
+			}
+			else {
+				if (target_label_counts[l0]) all_event_times.insert(t0);
+			}
+		}
 	}
 	QList<int> time_labels_keys=time_labels.keys();
 	free(buffer_TL);
@@ -60,6 +79,14 @@ int extractclips(FILE *infile,FILE *infile_TL,FILE *outfile,FILE *outfile_TL,FIL
 	printf("...\n");
 	if (all_labels) {
 		printf("Finding all labels\n");
+	}
+	else if (combine_with_or) {
+		printf("Combining with or\n");
+		foreach (int ll,time_labels_keys) {
+			if (target_label_counts[ll]) {
+				printf("Label %d: %d times\n",ll,time_labels[ll].count());
+			}
+		}
 	}
 	else {
 		foreach (int ll,time_labels_keys) {

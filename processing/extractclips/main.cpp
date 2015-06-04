@@ -42,12 +42,14 @@ int main(int argc, char *argv[])
 	runparams["clipsize"]=clipsize;
 	if (params.named_parameters.contains("fixed-clipsize")) runparams["fixed-clipsize"]=true;
 
-	QStringList labels=params.named_parameters["labels"].split(",");
+	/*QStringList labels=params.named_parameters["labels"].split(",");
 	if (labels.count()==0) {
 		qCritical() << "invalid labels" << params.named_parameters["labels"];
 		usage(); return -1;
 	}
-	runparams["labels"]=labels;
+	runparams["labels"]=labels;*/
+
+	runparams["labels"]=params.named_parameters["labels"];
 
 	FILE *inf=fopen(inpath.toLatin1().data(),"rb");
 	if (!inf) {printf("Unable to open input file for reading.\n"); return -1;}
