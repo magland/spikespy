@@ -28,6 +28,8 @@ for j=1:length(varargin)
 			script{end+1}='W.addView(V);';	
 			script{end+1}=sprintf('V.setTitle(''%s'');',arg{2});
 		else
+			if (~isrow(arg{1})) arg{1}=arg{1}'; end; %handle column vector
+			if (~isrow(arg{2})) arg{2}=arg{2}'; end; %handle column vector
 			TLvar=sprintf('T%d',j); data.(TLvar)=[arg{1};arg{2}];
 			%Lvar=sprintf('L%d',j); data.(Lvar)=arg{2};
 			script{end+1}='var V=SPIKESPY.createLabelView();';
@@ -38,6 +40,8 @@ for j=1:length(varargin)
 		end;
 	elseif (iscell(arg))&&(length(arg)>=3)
 		Xvar=sprintf('X%d',j); data.(Xvar)=arg{1};
+		if (~isrow(arg{2})) arg{2}=arg{2}'; end; %handle column vector
+		if (~isrow(arg{3})) arg{3}=arg{3}'; end; %handle column vector
 		TLvar=sprintf('T%d',j); data.(TLvar)=[arg{2};arg{3}];
 		%Lvar=sprintf('L%d',j); data.(Lvar)=arg{3};
 		script{end+1}='var V=SPIKESPY.createTimeSeriesView();';
