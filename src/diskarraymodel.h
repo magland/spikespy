@@ -13,6 +13,7 @@ public:
 	explicit DiskArrayModel(QObject *parent = 0);
 	~DiskArrayModel();
 	void setPath(QString path);
+	void setFromMda(const Mda &X);
 	QString path();
 	bool fileHierarchyExists();
 	void createFileHierarchyIfNeeded();

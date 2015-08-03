@@ -7,6 +7,7 @@
 #include <QDebug>
 #include "sslabelsmodel1.h"
 #include <math.h>
+#include <QStringList>
 
 class SSTimeSeriesViewPrivate {
 public:
@@ -79,6 +80,10 @@ void SSTimeSeriesView::keyPressEvent(QKeyEvent *evt)
 			}
 		}
 	}
+	else if (evt->key()==Qt::Key_V) {
+		d->m_plot->setUniformVerticalChannelSpacing(!d->m_plot->uniformVerticalChannelSpacing());
+		return;
+	}
 	SSAbstractView::keyPressEvent(evt);
 }
 
@@ -123,6 +128,11 @@ void SSTimeSeriesView::setClipMode(bool val)
 bool SSTimeSeriesView::clipMode()
 {
 	return d->m_clip_mode;
+}
+
+void SSTimeSeriesView::setChannelLabels(const QStringList &labels)
+{
+	d->m_plot->setChannelLabels(labels);
 }
 
 SSLabelsModel *SSTimeSeriesView::getLabels()

@@ -22,7 +22,8 @@ public:
 	int m_num_timepoints;
 	int m_data_type;
 	QMap<QString,Mda *> m_loaded_chunks;
-	int m_num_parents;
+	Mda m_mda;
+	bool m_set_from_mda;
 	void read_header();
 	Mda *load_chunk(int scale,int chunk_ind);
 	Mda *load_chunk_from_file(QString path,int scale,int chunk_ind);
@@ -37,12 +38,12 @@ DiskArrayModel::DiskArrayModel(QObject *parent) : QObject(parent)
 	d=new DiskArrayModelPrivate;
 	d->q=this;
 
+	d->m_set_from_mda=false;
 	d->m_scale_factor=4;
 	d->m_chunk_size=1;
 	d->m_num_channels=1;
 	d->m_num_timepoints=0;
 	d->m_data_type=MDA_TYPE_REAL;
-	d->m_num_parents=0;
 }
 
 DiskArrayModel::~DiskArrayModel()
@@ -60,6 +61,15 @@ void DiskArrayModel::setPath(QString path) {
 	d->m_chunk_size=qMax(10000/d->m_num_channels,1000);
 }
 
+void DiskArrayModel::setFromMda(const Mda &X)
+{
+	d->m_mda=X;
+	d->m_set_from_mda=true;
+	d->m_num_channels=X.N1();
+	d->m_num_timepoints=X.N2();
+	d->m_data_type=MDA_TYPE_REAL;
+}
+
 QString DiskArrayModel::path()
 {
 	return d->m_path;
@@ -69,6 +79,34 @@ Mda DiskArrayModel::loadData(int scale,int t1,int t2) {
 	Mda X; X.setDataType(d->m_data_type);
 	int d3=2;
 	X.allocate(d->m_num_channels,t2-t1+1,d3);
+
+	if (d->m_set_from_mda) {
+		if (scale==1) {
+			for (int tt=t1; tt<=t2; tt++) {
+				for (int mm=0; mm<d->m_num_channels; mm++) {
+					X.setValue(d->m_mda.value(mm,tt),mm,tt-t1,0);
+					X.setValue(d->m_mda.value(mm,tt),mm,tt-t1,1);
+				}
+			}
+		}
+		else {
+			for (int tt=t1; tt<=t2; tt++) {
+				for (int mm=0; mm<d->m_num_channels; mm++) {
+					float minval=d->m_mda.value(mm,tt*scale);
+					float maxval=d->m_mda.value(mm,tt*scale);
+					for (int dt=0; dt<scale; dt++) {
+						float tmpval=d->m_mda.value(mm,tt*scale+dt);
+						if (tmpval<minval) minval=tmpval;
+						if (tmpval>maxval) maxval=tmpval;
+					}
+					X.setValue(d->m_mda.value(mm,tt),mm,tt-t1,minval);
+					X.setValue(d->m_mda.value(mm,tt),mm,tt-t1,maxval);
+				}
+			}
+		}
+		return X;
+	}
+
 	int chunk_ind=t1/d->m_chunk_size;
 	for (int i=chunk_ind; i*d->m_chunk_size<=t2; i++) {
 		int tA1,tB1;
@@ -103,11 +141,17 @@ Mda DiskArrayModel::loadData(int scale,int t1,int t2) {
 
 }
 float DiskArrayModel::value(int ch,int t) {
+	if (d->m_set_from_mda) {
+		return d->m_mda.value(ch,t);
+	}
 	Mda tmp=loadData(1,t,t);
 	return tmp.value(ch,0);
 }
 
 bool DiskArrayModel::fileHierarchyExists() {
+	if (d->m_set_from_mda) {
+		return true;
+	}
 	int scale0=1;
 	while (d->m_num_timepoints/(scale0*MULTISCALE_FACTOR)>1) scale0*=MULTISCALE_FACTOR;
 	QString path0=d->get_multiscale_file_name(scale0);
@@ -364,6 +408,7 @@ bool do_minmax_downsample(QString path1,QString path2,int factor,QProgressDialog
 }
 
 void DiskArrayModel::createFileHierarchyIfNeeded() {
+	if (d->m_set_from_mda) return;
 	if (fileHierarchyExists()) return;
 
 	QProgressDialog dlg("Creating file hierarchy","Cancel",0,100);

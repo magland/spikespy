@@ -26,6 +26,12 @@ public:
 	void setYRange(const Vec2 &range);
 	void initialize();
 
+	DiskArrayModel *data();
+
+	void setChannelLabels(const QStringList &labels);
+	void setUniformVerticalChannelSpacing(bool val);
+	bool uniformVerticalChannelSpacing();
+
 
 	void setData(SSARRAY *data);
 	void setLabels(SSLabelsModel1 *L,bool is_owner=false);

@@ -27,12 +27,14 @@ public:
 	QList<double> m_plot_y1;
 	QList<double> m_plot_y2;
 	QList<QColor> m_channel_colors;
+	QStringList m_channel_labels;
 	QList<QColor> m_label_colors;
 	QPixmap m_image;
 	bool m_image_needs_update;
 	//QMap<int,Mda *> m_multiscale_min_arrays;
 	//QMap<int,Mda *> m_multiscale_max_arrays;
 	int m_margins[4];
+	bool m_uniform_vertical_channel_spacing;
   
 	void set_data2();
 	QColor get_channel_color(int num);
@@ -51,6 +53,8 @@ SSTimeSeriesPlot::SSTimeSeriesPlot(QWidget *parent) : SSAbstractPlot(parent) {
 
 	d->m_max_timepoint=0;
 	d->m_num_channels=1;
+
+	d->m_uniform_vertical_channel_spacing=true;
 
 	QList<QString> color_strings;
 
@@ -99,11 +103,14 @@ SSTimeSeriesPlot::~SSTimeSeriesPlot() {
 
 void SSTimeSeriesPlot::updateSize()
 {
+
 	d->m_plot_area.setPosition(d->m_margins[0],d->m_margins[2]);
 	d->m_plot_area.setSize(width()-d->m_margins[0]-d->m_margins[1], height()-d->m_margins[1]-d->m_margins[3]);
+
 }
 
 void SSTimeSeriesPlot::paintPlot(QPaintEvent *event) {
+
 	Q_UNUSED(event);
 
 	QPainter painter(this);
@@ -123,10 +130,10 @@ void SSTimeSeriesPlot::paintPlot(QPaintEvent *event) {
 	}
 
 	painter.drawPixmap(0,0,d->m_image);
-
 }
 
 void SSTimeSeriesPlot::setData(SSARRAY *data) {
+
 	if (!data) {
 		qWarning() << "Unexpected problem in SSTimeSeriesPlot::setData. data is null.";
 		return;
@@ -139,13 +146,16 @@ void SSTimeSeriesPlot::setData(SSARRAY *data) {
 
 	d->m_image_needs_update=true;
 	update();
+
 }
 
 void SSTimeSeriesPlot::setLabels(SSLabelsModel1 *L,bool is_owner) {
+
 	d->m_labels=L;
 	d->m_labels_is_owner=is_owner;
 	d->m_image_needs_update=true;
 	update();
+
 }
 
 void SSTimeSeriesPlot::initialize()
@@ -153,7 +163,30 @@ void SSTimeSeriesPlot::initialize()
 	d->setup_plot_area();
 }
 
+DiskArrayModel *SSTimeSeriesPlot::data()
+{
+	return d->m_data;
+}
+
+void SSTimeSeriesPlot::setChannelLabels(const QStringList &labels)
+{
+	d->m_channel_labels=labels;
+}
+
+void SSTimeSeriesPlot::setUniformVerticalChannelSpacing(bool val)
+{
+	qDebug() << "###" << val;
+	d->m_uniform_vertical_channel_spacing=val;
+	this->slot_replot_needed();
+}
+
+bool SSTimeSeriesPlot::uniformVerticalChannelSpacing()
+{
+	return d->m_uniform_vertical_channel_spacing;
+}
+
 void SSTimeSeriesPlotPrivate::set_data2() {
+
 	int M = m_num_channels;
 	int N = m_max_timepoint+1;
 
@@ -194,6 +227,7 @@ void SSTimeSeriesPlotPrivate::set_data2() {
 	}
 
 	q->update();
+
 }
 
 QColor SSTimeSeriesPlotPrivate::get_channel_color(int ch) {
@@ -202,6 +236,7 @@ QColor SSTimeSeriesPlotPrivate::get_channel_color(int ch) {
 }
 
 void SSTimeSeriesPlotPrivate::setup_plot_area() {
+
 	if (!m_data) return;
 
 	QTime timer; timer.start();
@@ -240,6 +275,21 @@ void SSTimeSeriesPlotPrivate::setup_plot_area() {
 		}
 		if (qAbs(m_plot_maxvals[ch]) > max00) {
 			max00 = qAbs(m_plot_maxvals[ch]);
+		}
+	}
+
+	if (m_uniform_vertical_channel_spacing) {
+		if (m_plot_minvals.count()>0) {
+			float global_plot_minval=m_plot_minvals[0];
+			float global_plot_maxval=m_plot_maxvals[0];
+			for (int i=0; i<m_plot_minvals.count(); i++) {
+				if (m_plot_minvals[i]<global_plot_minval) global_plot_minval=m_plot_minvals[i];
+				if (m_plot_maxvals[i]>global_plot_maxval) global_plot_maxval=m_plot_maxvals[i];
+			}
+			for (int i=0; i<m_plot_minvals.count(); i++) {
+				m_plot_minvals[i]=global_plot_minval;
+				m_plot_maxvals[i]=global_plot_maxval;
+			}
 		}
 	}
 
@@ -311,7 +361,9 @@ void SSTimeSeriesPlotPrivate::setup_plot_area() {
 			PlotSeries SS;
 			SS.xvals=xvals; SS.yvals=yvals; SS.color=color; SS.offset=m_plot_offsets[ch];
 			SS.plot_pairs=false;
-			SS.name=QString("%1").arg(ch+1);
+			QString label0=m_channel_labels.value(ch);
+			if (label0.isEmpty()) label0=QString("%1").arg(ch+1);
+			SS.name=label0;
 			m_plot_area.addSeries(SS);
 		}
 		else {
@@ -365,6 +417,7 @@ void SSTimeSeriesPlotPrivate::setup_plot_area() {
 
 	m_image_needs_update=true;
 	q->update();
+
 }
 
 Vec2 SSTimeSeriesPlot::coordToPix(Vec2 coord) {
@@ -400,7 +453,9 @@ void SSTimeSeriesPlot::setMargins(int left,int right,int top,int bottom) {
 
 void SSTimeSeriesPlot::slot_replot_needed()
 {
+
 	d->setup_plot_area();
+
 }
 
 void SSTimeSeriesPlot::setXRange(const Vec2 &range) {
