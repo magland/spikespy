@@ -59,6 +59,10 @@ for j=1:length(varargin)
 	end;
 end;
 
+if (~exist(spikespy_exec,'file'))
+    error(sprintf('Unable to find spikespy executable (%s). Mostly likely, you need to compile spikespy. See the README if available.',spikespy_exec));
+end;
+
 Htmp=run_java_script(spikespy_exec,script,data,verbose);
 if (nargout>0) H=Htmp; end;
 
