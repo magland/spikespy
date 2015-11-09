@@ -20,7 +20,10 @@ public:
 	QList<QColor> m_marker_colors;
 	QList<QString> m_marker_labels;
 	int m_left_panel_width;
+	int m_right_panel_width;
 	bool m_plot_baselines;
+    int m_marker_alpha;
+    bool m_show_marker_lines;
 
 	void do_refresh(QPainter *P);
 };
@@ -34,7 +37,10 @@ PlotArea::PlotArea() {
 	d->m_line_width=1;
 	//d->m_connect_zeros=true;
 	d->m_left_panel_width=10;
+	d->m_right_panel_width=10;
 	d->m_plot_baselines=false;
+    d->m_marker_alpha=255;
+    d->m_show_marker_lines=true;
 }
 
 PlotArea::~PlotArea() {
@@ -91,7 +97,10 @@ void PlotAreaPrivate::do_refresh(QPainter *P) {
 	P->fillRect(qMin(PP0.x,PP1.x),qMin(PP0.y,PP1.y), qAbs(PP0.x-PP1.x), qAbs(PP0.y-PP1.y),QBrush(QColor(0,0,0,0)));
 	*/
 
+	P->fillRect(QRect(m_left_panel_width,m_plot_rect.top(),m_plot_rect.width()-m_left_panel_width-m_right_panel_width,m_plot_rect.height()),QBrush(QColor(240,240,240)));
+
 	m_left_panel_width=qMax(40,qMin(20,m_plot_rect.width()/100));
+	m_right_panel_width=m_left_panel_width;
 
 	//left panel
 	for (int ss=0; ss<m_series.count(); ss++) {
@@ -108,45 +117,54 @@ void PlotAreaPrivate::do_refresh(QPainter *P) {
 		for (int ss=0; ss<m_series.count(); ss++) {
 			PlotSeries *SS=&m_series[ss];
 			Vec2 pix=q->coordToPix(vec2(0,SS->offset));
-			P->drawLine(m_left_panel_width,pix.y,m_plot_rect.width(),pix.y);
+			P->drawLine(m_left_panel_width,pix.y,m_plot_rect.width()-m_left_panel_width-m_right_panel_width,pix.y);
 		}
 	}
 
-	//plot the markers
-	P->setFont(QFont("Arial",8));
-	QSet<int> marker_x_positions;
-	for (int i=0; i<m_markers.count(); i++) {
-		int t0=m_markers[i].t;
-		int l0=m_markers[i].l;
-		Vec2 pix=q->coordToPix(vec2(t0,0));
-		QColor col=QColor(0,0,0);
-		if (l0==0) {
-			col=Qt::gray;
-		}
-		else {
-			if (m_marker_colors.count()>0) {
-				col=m_marker_colors.value((l0-1)%m_marker_colors.count());
-			}
-		}
-		P->setPen(QPen(col,1));
-		P->drawLine(pix.x,m_plot_rect.bottom(),pix.x,m_plot_rect.top());
-		float pixels_per_marker=m_plot_rect.width()*1.0/m_markers.count();
-		if ((pixels_per_marker>1)&&(l0>0)) {
-			if (l0<m_marker_labels.count()) {
-				int x0=pix.x;
-				int offset=0;
-				for (int dx=-6; dx<=0; dx++) {
-					if (marker_x_positions.contains(x0+dx)) offset=dx+6;
-				}
-				if (offset>0) x0+=offset;
-				QRect RR(x0-50,m_plot_rect.bottom(),100,15);
-				marker_x_positions.insert(x0);
-				float tmp=qMin(200.0F,(pixels_per_marker-1)*1.0F/6*255);
-				P->setPen(QPen(QColor(255-tmp,255-tmp,255-tmp),0));
-				P->drawText(RR,Qt::AlignCenter|Qt::AlignVCenter,m_marker_labels[l0]);
-			}
-		}
-	}
+    //plot the markers
+    P->setFont(QFont("Arial",8));
+    QSet<int> marker_x_positions;
+    for (int i=0; i<m_markers.count(); i++) {
+        int t0=m_markers[i].t;
+        int l0=m_markers[i].l;
+        Vec2 pix=q->coordToPix(vec2(t0,0));
+        QColor col=QColor(0,0,0);
+        if (l0==0) {
+            col=Qt::gray;
+        }
+        else {
+            if (m_marker_colors.count()>0) {
+                col=m_marker_colors.value((l0-1)%m_marker_colors.count());
+            }
+        }
+        float pixels_per_marker=m_plot_rect.width()*1.0/m_markers.count();
+		float marker_width=qMin(0.5F,pixels_per_marker/20);
+        P->setPen(QPen(col,marker_width));
+        if (m_show_marker_lines) {
+            P->drawLine(pix.x,m_plot_rect.bottom(),pix.x,m_plot_rect.top());
+        }
+
+        if ((pixels_per_marker>1)&&(l0>0)) {
+            if (l0<m_marker_labels.count()) {
+                int x0=pix.x;
+                int offset=0;
+                for (int dx=-6; dx<=0; dx++) {
+                    if (marker_x_positions.contains(x0+dx)) offset=dx+6;
+                }
+                if (offset>0) {
+                    x0+=offset;
+                }
+                QRect RR(x0-50,m_plot_rect.bottom(),100,15);
+                marker_x_positions.insert(x0);
+				//float tmp=qMin(200.0F,(pixels_per_marker-1)*1.0F/6*255);
+                //P->setPen(QPen(QColor(255-tmp,255-tmp,255-tmp),0));
+                QColor color_of_text=col;
+				color_of_text.setAlpha((int)qMin(255.0F,pixels_per_marker*256.0F/20));
+                P->setPen(color_of_text);
+                P->drawText(RR,Qt::AlignCenter|Qt::AlignVCenter,m_marker_labels[l0]);
+            }
+        }
+    }
 
 	//plot the actual data
 	int num_line_segments=0;
@@ -193,6 +211,9 @@ void PlotAreaPrivate::do_refresh(QPainter *P) {
 		}
 		P->drawPath(path);
 	}
+
+
+
 	//qDebug()  << "num_segments = " << num_segments << "elapsed: " << timer.elapsed();
 }
 
@@ -208,7 +229,7 @@ Vec2 PlotArea::coordToPix(Vec2 coord) {
 	double y0 = coord.y;
 	double pctx = (x0 - d->m_xmin) / (d->m_xmax - d->m_xmin);
 	double pcty = (y0 - d->m_ymin) / (d->m_ymax - d->m_ymin);
-	double x1 = (d->m_plot_rect.left()+d->m_left_panel_width) + (d->m_plot_rect.width()-d->m_left_panel_width) * pctx;
+	double x1 = (d->m_plot_rect.left()+d->m_left_panel_width+5) + (d->m_plot_rect.width()-d->m_left_panel_width-d->m_right_panel_width-10) * pctx;
 	double y1 = d->m_plot_rect.top() + d->m_plot_rect.height() * (1 - pcty);
 	return vec2(x1, y1);
 }
@@ -222,7 +243,7 @@ Vec2 PlotArea::pixToCoord(Vec2 pix) {
 	}
 	double x0 = pix.x;
 	double y0 = pix.y;
-	double pctx = (x0 - (d->m_plot_rect.left()+d->m_left_panel_width)) / (d->m_plot_rect.width()-d->m_left_panel_width);
+	double pctx = (x0 - (d->m_plot_rect.left()+d->m_left_panel_width+5)) / (d->m_plot_rect.width()-d->m_left_panel_width-d->m_right_panel_width-10);
 	double pcty = (y0 - d->m_plot_rect.top()) / d->m_plot_rect.height();
 	double x1 = d->m_xmin + (d->m_xmax - d->m_xmin) * pctx;
 	double y1 = d->m_ymax - (d->m_ymax - d->m_ymin) * pcty;
@@ -246,7 +267,22 @@ void PlotArea::setMarkerLabels(const QList<QString> &labels)
 
 void PlotArea::setPlotBaselines(bool val)
 {
-	d->m_plot_baselines=val;
+    d->m_plot_baselines=val;
+}
+
+void PlotArea::setMarkerAlpha(int val)
+{
+    d->m_marker_alpha=val;
+}
+
+void PlotArea::setShowMarkerLines(bool val)
+{
+	d->m_show_marker_lines=val;
+}
+
+QRect PlotArea::plotRect()
+{
+	return d->m_plot_rect;
 }
 Vec2 PlotArea::yRange() const {
 	return vec2(d->m_ymin,d->m_ymax);

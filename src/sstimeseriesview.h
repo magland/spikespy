@@ -25,11 +25,14 @@ public:
 	bool clipMode();
 
 	void setChannelLabels(const QStringList &labels);
+	void setUniformVerticalChannelSpacing(bool val);
 
 	SSLabelsModel *getLabels();
 
 	float currentValue();
 	QString viewType();
+
+    SSTimeSeriesPlot *plot();
 
 signals:
 	void requestCenterOnCursor();
@@ -38,7 +41,7 @@ protected:
 	void keyPressEvent(QKeyEvent *);
 
 protected:
-	SSTimeSeriesPlot *plot();
+
 
 private:
 	SSTimeSeriesViewPrivate *d;

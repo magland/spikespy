@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	FILE *outf=fopen(outpath.toLatin1().data(),"wb");
 	if (!outf) {printf("Unable to open output file for writing.\n"); fclose(inf); return -1;}
 
-	qDebug() << "ssfeatures" << inpath << outpath << runparams["nfeatures"].toInt() << runparams["niterations"].toInt();
+	qDebug()  << "ssfeatures" << inpath << outpath << runparams["nfeatures"].toInt() << runparams["niterations"].toInt();
 	if (!ssfeatures(inf,outf,runparams)) {
 		qCritical() << "Problem in ssfeatures.";
 	}

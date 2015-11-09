@@ -437,7 +437,17 @@ bool Mda::write(char *path) {
 	
 	jfclose(outf);
 	
-	return ret;
+    return ret;
+}
+
+bool Mda::read(const QString &path)
+{
+    return read(path.toLatin1().data());
+}
+
+bool Mda::write(const QString &path)
+{
+    return write(path.toLatin1().data());
 }
 
 bool MdaPrivate::do_write(FILE *outf) {

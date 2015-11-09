@@ -54,7 +54,7 @@ SSAbstractView::SSAbstractView(QWidget *parent) : QWidget(parent) {
 	d=new SSAbstractViewPrivate;
 	d->q=this;
 
-	d->m_sampling_freq=20000;
+	d->m_sampling_freq=30000;
 	d->m_signals_enabled=true;
 	d->m_current_x=-1;
 	d->m_selected_xmin=-1;
@@ -88,8 +88,6 @@ void SSAbstractView::setTitle(QString title)
 
 
 void SSAbstractViewUnderlayPainter::paint(QPainter *painter) {
-	painter->setRenderHint( QPainter::Antialiasing );
-
 	q->plot()->updateSize();
 
 	int H=q->plot()->height();
@@ -114,7 +112,7 @@ void SSAbstractViewUnderlayPainter::paint(QPainter *painter) {
 			path.lineTo(p1.x,p1.y-10);
 			QColor col=QColor(60,80,60);
 			if (d->m_activated) {
-				col=Qt::red;
+				col=Qt::gray;
 			}
 			painter->fillPath(path,QBrush(col));
 
@@ -162,7 +160,6 @@ void SSAbstractViewUnderlayPainter::paint(QPainter *painter) {
 	painter->setFont(QFont("Arial",8));\
 	painter->setPen(QPen(Qt::darkGray));
 	painter->drawText(pix1.x+8,q->plot()->height()-6,d->m_title);
-
 }
 void SSAbstractView::mousePressEvent(QMouseEvent *evt) {
 	emit clicked();

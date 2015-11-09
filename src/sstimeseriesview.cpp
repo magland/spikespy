@@ -35,7 +35,7 @@ SSTimeSeriesView::SSTimeSeriesView(QWidget *parent) : SSAbstractView(parent) {
 	d->m_clip_mode=false;
 
 	d->m_plot=new SSTimeSeriesPlot;
-	d->m_plot->setMargins(0,0,5,38); //timeline (30) + event labels (8)
+	d->m_plot->setMargins(0,0,20,20);
 	//d->m_plot->setUnderlayPainter(d->m_underlay_painter);
 
 	QVBoxLayout *layout=new QVBoxLayout;
@@ -133,6 +133,11 @@ bool SSTimeSeriesView::clipMode()
 void SSTimeSeriesView::setChannelLabels(const QStringList &labels)
 {
 	d->m_plot->setChannelLabels(labels);
+}
+
+void SSTimeSeriesView::setUniformVerticalChannelSpacing(bool val)
+{
+	d->m_plot->setUniformVerticalChannelSpacing(val);
 }
 
 SSLabelsModel *SSTimeSeriesView::getLabels()

@@ -40,7 +40,7 @@ signals:
 
 protected:
 	void paintEvent(QPaintEvent *evt);
-	virtual void paintPlot(QPaintEvent *evt)=0;
+	virtual void paintPlot(QPainter *painter)=0;
 
 private:
 	SSAbstractPlotPrivate *d;

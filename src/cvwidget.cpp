@@ -160,7 +160,7 @@ QColor CVWidgetPrivate::get_label_color(int label)
 
 void CVWidgetPrivate::generate_features_from_clips()
 {
-	if (m_clips.totalSize()==1) {
+    if (m_clips.totalSize()<=1) {
 		QMessageBox::critical(q,"Problem generating features.","Problem generating features. m_clips is null.");
 		return;
 	}
@@ -177,6 +177,12 @@ void CVWidgetPrivate::generate_features_from_clips()
 	m_clips.write(inpath);
 
 	QString exe=qApp->applicationDirPath()+"/ssfeatures";
+    if (!QFile::exists(exe)) {
+        QString exe2=qApp->applicationDirPath()+"/../src/spikespy/bin/ssfeatures";
+        if (QFile::exists(exe2)) {
+            exe=exe2;
+        }
+    }
 	QStringList args; args << inpath << outpath << "--method=pca" << "--nfeatures=3";
 	int ret=QProcess::execute(exe,args);
 

@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 	FILE *outf=fopen(outpath.toLatin1().data(),"wb");
 	if (!outf) {printf("Unable to open output file for writing.\n"); fclose(inf); return -1;}
 
-	qDebug() << "Running expfilter" << inpath << outpath << lowpass << tau;
+	qDebug()  << "Running expfilter" << inpath << outpath << lowpass << tau;
 	if (!expfilter(inf,outf,lowpass,tau)) {
 		qCritical() << "Problem in expfilter.";
 	}

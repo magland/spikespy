@@ -41,6 +41,7 @@ public:
 	QString m_widget_type;
 	ExtractClipsDialog m_extract_clips_dlg;
 	QMenuBar *m_menubar;
+    Mda m_clip_data;
 
 	void set_info(QString txt);
 	void connect_view(SSAbstractView *V,bool current_timepoint_only);
@@ -61,12 +62,13 @@ SSTimeSeriesWidget::SSTimeSeriesWidget(QWidget *parent) : QWidget(parent) {
 	d->m_splitter.setStyleSheet("QSplitter {background: gray;}");
 	d->m_splitter.setOrientation(Qt::Vertical);
 
-	d->m_info.setFixedHeight(10);
+	d->m_info.setFixedHeight(30);
 	d->m_info.setFont(QFont("Arial",10));
+	d->m_info.setMargin(20);
 
 	QWidget *CW=new QWidget();
 	QVBoxLayout *CL=new QVBoxLayout();
-	CL->setMargin(0); CL->setContentsMargins(0,0,0,0);
+	CL->setMargin(0); CL->setContentsMargins(4,4,4,4);
 	CL->setSpacing(0);
 	CW->setLayout(CL);
 
@@ -134,7 +136,12 @@ void SSTimeSeriesWidget::addView(SSAbstractView *V) {
 		d->m_current_view=V;
 		d->update_menu_bar();
 	}
-	d->tell_current_view();
+    d->tell_current_view();
+}
+
+void SSTimeSeriesWidget::setClipData(const Mda &X)
+{
+    d->m_clip_data=X;
 }
 
 void SSTimeSeriesWidgetPrivate::set_info(QString txt) {
@@ -290,6 +297,10 @@ void SSTimeSeriesWidget::slot_extract_clips()
 	QStringList args; args << data_path << TL_path << out_path << QString("--clipsize=%1").arg(clipsize) << "--labels="+labels_txt;
 	if (fixed_clipsize) args << "--fixed-clipsize";
 	QString exe=qApp->applicationDirPath()+"/extractclips";
+	if (!QFile::exists(exe)) {
+		QString exe2=qApp->applicationDirPath()+"/../src/spikespy/bin/extractclips";
+		if (QFile::exists(exe2)) exe=exe2;
+	}
 	qDebug()  << exe << args;
 	QProcess process;
 	process.start(exe,args);
@@ -420,6 +431,10 @@ void SSTimeSeriesWidget::slot_extract_comparison_clips()
 
 	QStringList args; args << data_path1 << data_path2 << TL1_path << TL1_path << out_path1 << out_path2 << QString("--clipsize=%1").arg(clipsize) << "--labels="+labels_txt;
 	QString exe=qApp->applicationDirPath()+"/extractclips2";
+	if (!QFile::exists(exe)) {
+		QString exe2=qApp->applicationDirPath()+"/../src/spikespy/bin/extractclips2";
+		if (QFile::exists(exe2)) exe=exe2;
+	}
 	qDebug()  << exe << args;
 	QProcess process;
 	process.start(exe,args);
@@ -473,23 +488,32 @@ void SSTimeSeriesWidget::slot_center_on_cursor()
 
 void SSTimeSeriesWidget::slot_view_clusters()
 {
-	if (!d->m_current_view) return;
-	QString clip_data_path=d->m_current_view->property("data_path").toString();
-	QString clip_TM_data_path=d->m_current_view->property("TM_data_path").toString();
-	if (clip_data_path.isEmpty()) {
-		qWarning() << "clip_data_path is empty.";
-		return;
-	}
-	CVComboWidget *W=new CVComboWidget();
-	W->setAttribute(Qt::WA_DeleteOnClose);
-	DiskReadMda X(clip_data_path); //a hack!
-	W->setClips(X);
-	DiskReadMda TM(clip_TM_data_path);
-	W->setTimepointMapping(TM);
-	W->show();
-	W->resize(500,500);
-	W->setWindowTitle(this->windowTitle());
-	d->connect_view(W->timeSeriesView(),true);
+
+    if (!d->m_current_view) return;
+    CVComboWidget *W=new CVComboWidget();
+    W->setAttribute(Qt::WA_DeleteOnClose);
+    QString clip_data_path=d->m_current_view->property("data_path").toString();
+    QString clip_TM_data_path=d->m_current_view->property("TM_data_path").toString();
+
+    if (!clip_data_path.isEmpty()) {
+        if (clip_data_path.isEmpty()) {
+            qWarning() << "clip_data_path is empty.";
+            return;
+        }
+        DiskReadMda X(clip_data_path); //a hack!
+        W->setClips(X);
+        DiskReadMda TM(clip_TM_data_path);
+        W->setTimepointMapping(TM);
+    }
+    else {
+        DiskReadMda X(d->m_clip_data);
+        W->setClips(X);
+        DiskReadMda TM(clip_TM_data_path);
+    }
+    W->show();
+    W->resize(500,500);
+    W->setWindowTitle(this->windowTitle());
+    d->connect_view(W->timeSeriesView(),true);
 }
 
 void SSTimeSeriesWidgetPrivate::update_info(SSAbstractView *V) {

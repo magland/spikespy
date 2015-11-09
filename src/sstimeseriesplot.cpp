@@ -60,12 +60,22 @@ SSTimeSeriesPlot::SSTimeSeriesPlot(QWidget *parent) : SSAbstractPlot(parent) {
 
 	QList<QString> color_strings;
 
-	color_strings << "darkblue" << "darkgreen" << "darkred" << "darkcyan" << "darkmagenta" << "darkorange" << "black";
-	for (int i=0; i<color_strings.size(); i++) {
-		d->m_channel_colors << QColor(color_strings[i]);
-	}
+    //color_strings << "darkblue" << "darkgreen" << "darkred" << "darkcyan" << "darkmagenta" << "darkorange" << "black";
+    color_strings
+            << "#282828"
+            << "#402020"
+            << "#204020"
+            << "#202070";
+            //<< "#403010"
+//            << "#401050";
+//            << "#103050";
+
+    for (int i=0; i<color_strings.size(); i++) {
+        d->m_channel_colors << QColor(color_strings[i]);
+    }
 
 	color_strings.clear();
+    /*
 	color_strings << "#F7977A" << "#FDC68A"
 				<< "#C4DF9B" << "#82CA9D"
 				<< "#6ECFF6" << "#8493CA"
@@ -74,6 +84,21 @@ SSTimeSeriesPlot::SSTimeSeriesPlot(QWidget *parent) : SSAbstractPlot(parent) {
 				<< "#A2D39C" << "#7BCDC8"
 				<< "#7EA7D8" << "#8882BE"
 				<< "#BC8DBF" << "#F6989D";
+                */
+
+    /*
+    color_strings
+            << "#D0D0D0"
+            << "#80D0D0"
+            << "#D080D0"
+            << "#D0D080"
+            << "#8080D0"
+            << "#80D080"
+            << "#D08080";
+    */
+    //color_strings << "#CCBBFF";
+    color_strings << "#FF0000";
+
 	for (int i=0; i<color_strings.size(); i++) {
 		d->m_label_colors << QColor(color_strings[i]);
 	}
@@ -105,17 +130,11 @@ SSTimeSeriesPlot::~SSTimeSeriesPlot() {
 
 void SSTimeSeriesPlot::updateSize()
 {
-
 	d->m_plot_area.setPosition(d->m_margins[0],d->m_margins[2]);
-	d->m_plot_area.setSize(width()-d->m_margins[0]-d->m_margins[1], height()-d->m_margins[1]-d->m_margins[3]);
-
+	d->m_plot_area.setSize(width()-d->m_margins[0]-d->m_margins[1], height()-d->m_margins[2]-d->m_margins[3]);
 }
 
-void SSTimeSeriesPlot::paintPlot(QPaintEvent *event) {
-
-	Q_UNUSED(event);
-
-	QPainter painter(this);
+void SSTimeSeriesPlot::paintPlot(QPainter *painter) {
 
 	updateSize();
 
@@ -131,7 +150,7 @@ void SSTimeSeriesPlot::paintPlot(QPaintEvent *event) {
 		d->m_image_needs_update=false;
 	}
 
-	painter.drawPixmap(0,0,d->m_image);
+	painter->drawPixmap(0,0,d->m_image);
 }
 
 void SSTimeSeriesPlot::setData(SSARRAY *data) {
@@ -178,14 +197,18 @@ void SSTimeSeriesPlot::setChannelLabels(const QStringList &labels)
 
 void SSTimeSeriesPlot::setUniformVerticalChannelSpacing(bool val)
 {
-	qDebug() << "###" << val;
 	d->m_uniform_vertical_channel_spacing=val;
 	this->slot_replot_needed();
 }
 
 bool SSTimeSeriesPlot::uniformVerticalChannelSpacing()
 {
-	return d->m_uniform_vertical_channel_spacing;
+    return d->m_uniform_vertical_channel_spacing;
+}
+
+void SSTimeSeriesPlot::setShowMarkerLines(bool val)
+{
+    d->m_plot_area.setShowMarkerLines(val);
 }
 
 void SSTimeSeriesPlotPrivate::set_data2() {
@@ -221,7 +244,8 @@ void SSTimeSeriesPlotPrivate::set_data2() {
 					m_maxvals[ch] = val;
 				}
 			}
-		}
+        }
+
 	} else {
 		for (int ch=0; ch<M; ch++) {
 			m_minvals[ch]=0;
@@ -234,7 +258,7 @@ void SSTimeSeriesPlotPrivate::set_data2() {
 }
 
 QColor SSTimeSeriesPlotPrivate::get_channel_color(int ch) {
-	if (m_channel_colors.size()==0) return QColor(0,0,0);
+    if (m_channel_colors.size()==0) return QColor(0,0,0);
 	return m_channel_colors[ch % m_channel_colors.size()];
 }
 
@@ -397,7 +421,16 @@ void SSTimeSeriesPlotPrivate::setup_plot_area() {
 	//the label markers
 	m_plot_area.clearMarkers();
 	int max_range_for_showing_labels=1e6;
-	if ((m_labels)&&(x2-x1+1<=max_range_for_showing_labels)) {
+
+    ///This section is bad.
+    float tmprange=(x2-x1+1);
+    float tmprange_max=max_range_for_showing_labels;
+    float tmprange_min=10000; //magic, hack, hard-code, bug
+    float pp=qMax(0.0F,qMin(1.0F,(1-(tmprange-tmprange_min)/(tmprange_max-tmprange_min))));
+    //pp=pp*pp*pp*pp; //i'm actually proud of this bug
+    //int alpha=(int)(pp*255.999);
+    //m_plot_area.setMarkerAlpha((int)alpha);
+    if ((m_labels)&&(pp>0)) {
 		MemoryMda TL=m_labels->getTimepointsLabels(x1,x2);
 		int K=TL.size(1);
 		for (int i=0; i<K; i++) {

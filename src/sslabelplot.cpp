@@ -135,11 +135,7 @@ void SSLabelPlot::slot_replot_needed() {
 	this->refresh();
 }
 
-void SSLabelPlot::paintPlot(QPaintEvent *evt) {
-	Q_UNUSED(evt)
-
-	QPainter painter(this);
-
+void SSLabelPlot::paintPlot(QPainter *painter) {
 	updateSize();
 
 	if ((width()!=d->m_image.width())||(height()!=d->m_image.height())) {
@@ -154,13 +150,13 @@ void SSLabelPlot::paintPlot(QPaintEvent *evt) {
 		d->m_image_needs_update=false;
 	}
 
-	painter.drawPixmap(0,0,d->m_image);
+	painter->drawPixmap(0,0,d->m_image);
 
 	if (d->m_show_zoom_message) {
 		QString str="Zoom in to view labels";
-		painter.setFont(QFont("Arial",15));
+		painter->setFont(QFont("Arial",15));
 		QRect RR(0,0,width(),height()-30);
-		painter.drawText(RR,Qt::AlignCenter|Qt::AlignVCenter,str);
+		painter->drawText(RR,Qt::AlignCenter|Qt::AlignVCenter,str);
 	}
 }
 

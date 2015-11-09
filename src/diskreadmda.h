@@ -2,6 +2,7 @@
 #define DISKREADMDA_H
 
 #include "diskreadmda.h"
+#include "mda.h"
 #include <QString>
 #include <QObject>
 
@@ -14,6 +15,7 @@ public:
 	friend class DiskReadMdaPrivate;
 	explicit DiskReadMda(const QString &path="");
 	DiskReadMda(const DiskReadMda &other);
+    DiskReadMda(Mda &X);
 	void operator=(const DiskReadMda &other);
 	~DiskReadMda();
 

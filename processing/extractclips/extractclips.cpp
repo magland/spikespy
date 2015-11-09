@@ -197,7 +197,6 @@ int extractclips(FILE *infile,FILE *infile_TL,FILE *outfile,FILE *outfile_TL,FIL
 		//for (int kkk=0; kkk<padding; kkk++) buffer_padding_TM[kkk]=-1;
 		int n3=0;
 		for (int iii=0; iii<clip_t1.count(); iii++) {
-			if (iii%100==0) qDebug() << QString("Writing clip %1 of %2").arg(iii).arg(clip_t1.count());
 			int t1=qMax(0,clip_t1[iii]);
 			int t2=qMin(N-1,clip_t2[iii]);
 			//if (iii>0) {

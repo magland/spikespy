@@ -38,6 +38,9 @@ public:
 	void setMarkerLabels(const QList<QString> &labels);
 	//void setConnectZeros(bool val);
 	void setPlotBaselines(bool val);
+    void setMarkerAlpha(int val);
+    void setShowMarkerLines(bool val);
+	QRect plotRect();
 private:
 	PlotAreaPrivate *d;
 };

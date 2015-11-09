@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 	FILE *outf_TM=fopen(outpath_TM.toLatin1().data(),"wb");
 	if (!outf_TM) {printf("Unable to open output_TM file for writing.\n"); fclose(inf); fclose(inf_TL); fclose(outf); fclose(outf_TL); return -1;}
 
-	qDebug() << "Running extractclips" << inpath << inpath_TL << outpath << outpath_TL << outpath_TM << runparams["clipsize"].toInt();
+	qDebug()  << "Running extractclips" << inpath << inpath_TL << outpath << outpath_TL << outpath_TM << runparams["clipsize"].toInt();
 	if (!extractclips(inf,inf_TL,outf,outf_TL,outf_TM,runparams)) {
 		qCritical() << "Problem in extractclips.";
 	}

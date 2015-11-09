@@ -29,7 +29,7 @@ private slots:
 	void slot_replot_needed();
 
 private:
-	void paintPlot(QPaintEvent *evt);
+	void paintPlot(QPainter *painter);
 
 	SSLabelPlotPrivate *d;
 };

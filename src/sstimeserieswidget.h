@@ -15,6 +15,7 @@ public:
 	~SSTimeSeriesWidget();
 
 	Q_INVOKABLE void addView(SSAbstractView *V);
+    void setClipData(const Mda &X);
 
 private:
 	SSTimeSeriesWidgetPrivate *d;

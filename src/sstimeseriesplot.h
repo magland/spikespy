@@ -31,7 +31,7 @@ public:
 	void setChannelLabels(const QStringList &labels);
 	void setUniformVerticalChannelSpacing(bool val);
 	bool uniformVerticalChannelSpacing();
-
+    void setShowMarkerLines(bool val);
 
 	void setData(SSARRAY *data);
 	void setLabels(SSLabelsModel1 *L,bool is_owner=false);
@@ -46,7 +46,7 @@ private:
 	SSTimeSeriesPlotPrivate *d;
 
 protected:
-	virtual void paintPlot(QPaintEvent *evt);
+	virtual void paintPlot(QPainter *painter);
 
 signals:
 

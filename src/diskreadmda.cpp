@@ -7,6 +7,7 @@
 #include "usagetracking.h"
 #include <math.h>
 #include <QDebug>
+#include <QTemporaryFile>
 
 #define CHUNKSIZE 10000
 
@@ -25,6 +26,7 @@ public:
 	QString m_path;
 	int m_data_type;
 	int m_size[MDAIO_MAX_DIMS];
+    QTemporaryFile *m_temporary_file;
 
 	int get_index(int i1,int i2,int i3=0,int i4=0,int i5=0,int i6=0);
 	float *load_chunk(int i);
@@ -37,7 +39,7 @@ DiskReadMda::DiskReadMda(const QString &path) : QObject()
 {
 	d=new DiskReadMdaPrivate;
 	d->q=this;
-
+    d->m_temporary_file=0;
 	d->initialize_contructor();
 
 	if (!path.isEmpty()) setPath(path);
@@ -47,10 +49,26 @@ DiskReadMda::DiskReadMda(const DiskReadMda &other) : QObject()
 {
 	d=new DiskReadMdaPrivate;
 	d->q=this;
-
+    d->m_temporary_file=0;
 	d->initialize_contructor();
 
-	setPath(other.d->m_path);
+    setPath(other.d->m_path);
+}
+
+DiskReadMda::DiskReadMda(Mda &X)
+{
+    d=new DiskReadMdaPrivate;
+    d->q=this;
+    d->m_temporary_file=0;
+    d->initialize_contructor();
+
+    d->m_temporary_file=new QTemporaryFile();
+    d->m_temporary_file->open();
+    d->m_temporary_file->close();
+
+    QString path=d->m_temporary_file->fileName();
+    X.write(path);
+    this->setPath(path);
 }
 
 void DiskReadMda::operator=(const DiskReadMda &other)
@@ -63,6 +81,7 @@ DiskReadMda::~DiskReadMda()
 	d->clear_chunks();
 	if (d->m_file)
 		jfclose(d->m_file);
+    if (d->m_temporary_file) delete d->m_temporary_file;
 	delete d;
 }
 

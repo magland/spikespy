@@ -87,16 +87,22 @@ void SSAbstractPlot::setVerticalZoomFactor(float val)
 
 void SSAbstractPlot::paintEvent(QPaintEvent *evt)
 {
+	Q_UNUSED(evt)
+
 	QPainter painter(this);
 
-	painter.fillRect(0,0,width(),height(),QColor(240,240,240));
+	painter.fillRect(0,0,width(),height(),QColor(230,230,240));
+
+	painter.setRenderHint( QPainter::Antialiasing );
 
 	updateSize();
+
+	paintPlot(&painter);
 
 	if (d->m_underlay_painter) {
 		d->m_underlay_painter->paint(&painter);
 	}
-	paintPlot(evt);
+
 	if (d->m_overlay_painter) {
 		d->m_overlay_painter->paint(&painter);
 	}

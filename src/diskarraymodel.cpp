@@ -102,8 +102,11 @@ Mda DiskArrayModel::loadData(int scale,int t1,int t2) {
 						if (tmpval<minval) minval=tmpval;
 						if (tmpval>maxval) maxval=tmpval;
 					}
-					X.setValue(d->m_mda.value(mm,tt),mm,tt-t1,minval);
-					X.setValue(d->m_mda.value(mm,tt),mm,tt-t1,maxval);
+                    //X.setValue(d->m_mda.value(mm,tt),mm,tt-t1,minval);
+                    //X.setValue(d->m_mda.value(mm,tt),mm,tt-t1,maxval);
+                    //oops!!! this problem was fixed on 11/5/2015
+                    X.setValue(minval,mm,tt-t1,0);
+                    X.setValue(maxval,mm,tt-t1,1);
 				}
 			}
 		}
