@@ -33,6 +33,8 @@ private slots:
 	void slot_center_on_cursor();
 	void slot_view_clusters();
 
+	void slot_navigation_instructions();
+
 signals:
 
 public slots:

@@ -145,7 +145,7 @@ void SSAbstractViewUnderlayPainter::paint(QPainter *painter) {
 		path.lineTo(p0.x, p0.y);
 
 		int pen_width=6;
-		QColor pen_color=QColor(255,0,0);
+		QColor pen_color=QColor(150,150,150);
 		painter->setPen(QPen(QBrush(pen_color),pen_width));
 		painter->drawPath(path);
 	}

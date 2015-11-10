@@ -19,6 +19,7 @@
 #include <QTime>
 #include <QFileDialog>
 #include <QObjectList>
+#include <QTextBrowser>
 #include "cvcombowidget.h"
 #include "cvcommon.h"
 
@@ -109,6 +110,17 @@ SSTimeSeriesWidget::SSTimeSeriesWidget(QWidget *parent) : QWidget(parent) {
 				A->setObjectName("view_clusters");
 				A->setShortcut(QKeySequence("Ctrl+C"));
 				connect(A,SIGNAL(triggered()),this,SLOT(slot_view_clusters()));
+			}
+		}
+		{ //Instructions
+			QMenu *menu=new QMenu("Instructions",menubar);
+			menubar->addMenu(menu);
+			{
+				QAction *A=new QAction("Navigation Instructions",menu);
+				menu->addAction(A);
+				A->setObjectName("navigation_instructions");
+				A->setShortcut(QKeySequence("Ctrl+I"));
+				connect(A,SIGNAL(triggered()),this,SLOT(slot_navigation_instructions()));
 			}
 		}
 	}
@@ -513,7 +525,33 @@ void SSTimeSeriesWidget::slot_view_clusters()
     W->show();
     W->resize(500,500);
     W->setWindowTitle(this->windowTitle());
-    d->connect_view(W->timeSeriesView(),true);
+	d->connect_view(W->timeSeriesView(),true);
+}
+
+void SSTimeSeriesWidget::slot_navigation_instructions()
+{
+
+	QString html;
+	html+="<h3>SPIKESPY</h3>\n";
+	html+="<ul>\n";
+	html+="<li>Mousewheel scroll: zoom in, zoom out</li>\n";
+	html+="<li>+/- keys also zoom in, zoom out</li>\n";
+	html+="<li>up/down arrow keys do vertical zoom (on all views together)</li>\n";
+	html+="<li>Click and drag to pan</li>\n";
+	html+="<li>\"0\" to zoom back to full view</li>\n";
+	html+="<li>Left/right arrow keys scroll left/right by one page</li>\n";
+	html+="<li>Ctrl + left/right arrow keys move cursor left/right</li>\n";
+	html+="<li>Right-click and drag to select a time interval</li>\n";
+	html+="<li>ENTER to zoom in to the selected time interval</li>\n";
+	//html+="<li>F (when clicked on a view) flips the channel ordering</li>\n";
+	html+="</ul>\n";
+
+	QTextBrowser *W=new QTextBrowser;
+	W->setAttribute(Qt::WA_DeleteOnClose);
+	W->setHtml(html);
+	W->show();
+	W->resize(800,800);
+	W->move(this->geometry().topLeft()+QPoint(100,100));
 }
 
 void SSTimeSeriesWidgetPrivate::update_info(SSAbstractView *V) {
